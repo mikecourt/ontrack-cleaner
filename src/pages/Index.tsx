@@ -80,8 +80,8 @@ const Index = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background font-display text-foreground">
-      <aside className="w-64 bg-card p-6 flex flex-col justify-between border-r border-border">
+    <div className="flex min-h-screen w-full bg-background font-display text-foreground">
+      <aside className="w-64 bg-card p-6 flex flex-col justify-between border-r border-border shrink-0">
         <div>
           <h1 className="text-2xl font-bold mb-10">OnTrack</h1>
           <StepIndicator steps={steps} currentStep={currentStep} />
@@ -93,9 +93,16 @@ const Index = () => {
           </Button>
         </div>
       </aside>
-      <main className="flex-1 p-8">
-        <div className="max-w-full mx-auto">{renderStep()}</div>
+      
+      <main className="flex-1 p-8 overflow-auto">
+        {renderStep()}
       </main>
+      
+      {processingStats && (
+        <aside className="w-80 bg-card p-6 border-l border-border shrink-0 overflow-auto">
+          <StatsPanel stats={processingStats} />
+        </aside>
+      )}
     </div>
   );
 };
