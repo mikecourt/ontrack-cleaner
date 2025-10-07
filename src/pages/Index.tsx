@@ -7,7 +7,6 @@ import DataProcessingStep, { ProcessingStats } from "@/components/cleanroom/Data
 import ReviewStep from "@/components/cleanroom/ReviewStep";
 import ExportStep from "@/components/cleanroom/ExportStep";
 import StatsPanel from "@/components/cleanroom/StatsPanel";
-import ActivityPanel from "@/components/cleanroom/ActivityPanel";
 
 type Step = "upload" | "mapping" | "processing" | "review" | "export";
 
@@ -108,11 +107,10 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Right Sidebar - Stats & Activity */}
+          {/* Right Sidebar - Stats */}
           <div className="lg:col-span-3">
-            <div className="space-y-6 sticky top-8">
+            <div className="sticky top-8">
               <StatsPanel stats={processingStats} />
-              <ActivityPanel />
             </div>
           </div>
         </div>

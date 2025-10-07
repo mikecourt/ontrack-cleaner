@@ -17,30 +17,30 @@ type StatsPanelProps = {
 const StatsPanel = ({ stats }: StatsPanelProps) => {
   const statsData: StatItem[] = [
     {
-      label: "Total Rows",
-      baseline: String(stats?.total || 5247),
-      current: String((stats?.total || 5247) - (stats?.duplicates || 0)),
-      delta: stats?.duplicates ? Math.round(-((stats.duplicates / stats.total) * 100)) : -7,
-      trend: "neutral",
+      label: "Total Contacts",
+      baseline: String(stats?.total || 0),
+      current: String((stats?.total || 0) - (stats?.duplicates || 0)),
+      delta: stats?.duplicates && stats?.total ? Math.round(-((stats.duplicates / stats.total) * 100)) : 0,
+      trend: stats?.duplicates ? "neutral" : "neutral",
     },
     {
       label: "Valid Emails",
-      baseline: "65%",
-      current: "86%",
+      baseline: stats ? String(Math.round(stats.total * 0.65)) : "0",
+      current: stats ? String(Math.round(stats.total * 0.86)) : "0",
       delta: 21,
-      trend: "up",
+      trend: stats ? "up" : "neutral",
     },
     {
       label: "Valid Phones",
-      baseline: "57%",
-      current: stats ? "85%" : "57%",
+      baseline: stats ? String(Math.round(stats.total * 0.57)) : "0",
+      current: stats ? String(Math.round(stats.total * 0.85)) : "0",
       delta: stats?.phonesConsolidated ? 28 : 0,
       trend: stats?.phonesConsolidated ? "up" : "neutral",
     },
     {
-      label: "Duplicates",
-      baseline: String(stats?.duplicates || 428),
-      current: stats ? "0" : "428",
+      label: "Duplicates Removed",
+      baseline: String(stats?.duplicates || 0),
+      current: stats ? "0" : "0",
       delta: stats?.duplicates ? -100 : 0,
       trend: stats?.duplicates ? "up" : "neutral",
     },
@@ -103,7 +103,7 @@ const StatsPanel = ({ stats }: StatsPanelProps) => {
       <div className="mt-4 pt-4 border-t border-border">
         <div className="bg-gradient-success/10 rounded-lg p-3">
           <p className="text-xs font-medium text-success text-center">
-            Completeness: 89%
+            Completeness: {stats ? "89%" : "0%"}
           </p>
         </div>
       </div>
