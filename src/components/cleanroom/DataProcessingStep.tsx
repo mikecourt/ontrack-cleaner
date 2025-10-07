@@ -83,7 +83,22 @@ const DataProcessingStep = ({ fileName, selectedFields, onComplete }: DataProces
 
       const interval = setInterval(() => {
         setProgress((prev) => {
-          if (prev >= 100) {
+          const newProgress = prev >= 100 ? 100 : prev + 1.5;
+          
+          // Update task completion based on progress
+          const newTaskIndex = Math.floor((newProgress / 100) * tasks.length);
+          setCurrentTaskIndex((prevTaskIndex) => {
+            if (newTaskIndex < tasks.length && newTaskIndex > prevTaskIndex) {
+              setTasks((prevTasks) =>
+                prevTasks.map((task, idx) =>
+                  idx < newTaskIndex ? { ...task, completed: true } : task
+                )
+              );
+            }
+            return newTaskIndex;
+          });
+          
+          if (newProgress >= 100) {
             clearInterval(interval);
             
             // Apply actual cleaning functions
@@ -131,21 +146,9 @@ const DataProcessingStep = ({ fileName, selectedFields, onComplete }: DataProces
             };
             
             setStats(currentStats);
-            return 100;
           }
-          return prev + 1.5;
-        });
-
-        setCurrentTaskIndex((prev) => {
-          const newIndex = Math.floor((progress / 100) * tasks.length);
-          if (newIndex < tasks.length && newIndex > prev) {
-            setTasks((prevTasks) =>
-              prevTasks.map((task, idx) =>
-                idx < newIndex ? { ...task, completed: true } : task
-              )
-            );
-          }
-          return newIndex;
+          
+          return newProgress;
         });
       }, 80);
 
