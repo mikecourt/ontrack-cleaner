@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { Upload, Database, FileCheck, Download, ListFilter } from "lucide-react";
+import { Upload, Database, FileCheck, Download, ListFilter, RotateCcw } from "lucide-react";
 import StepIndicator from "@/components/cleanroom/StepIndicator";
 import UploadStep from "@/components/cleanroom/UploadStep";
+import ShiftingStep from "@/components/cleanroom/ShiftingStep";
 import ProcessingStep from "@/components/cleanroom/ProcessingStep";
 import DataProcessingStep, { ProcessingStats } from "@/components/cleanroom/DataProcessingStep";
 import ReviewStep from "@/components/cleanroom/ReviewStep";
 import ExportStep from "@/components/cleanroom/ExportStep";
 import StatsPanel from "@/components/cleanroom/StatsPanel";
+import { Button } from "@/components/ui/button";
 
-type Step = "upload" | "mapping" | "processing" | "review" | "export";
+type Step = "upload" | "shifting" | "mapping" | "processing" | "review" | "export";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>("upload");
@@ -17,6 +19,7 @@ const Index = () => {
 
   const steps = [
     { id: "upload", label: "Upload", icon: Upload },
+    { id: "shifting", label: "Shift Correction", icon: RotateCcw },
     { id: "mapping", label: "Map Fields", icon: ListFilter },
     { id: "processing", label: "Process", icon: Database },
     { id: "review", label: "Review", icon: FileCheck },
@@ -25,6 +28,10 @@ const Index = () => {
 
   const handleFileUpload = (names: string[]) => {
     setFileNames(names);
+    setCurrentStep("shifting");
+  };
+
+  const handleShiftingComplete = () => {
     setCurrentStep("mapping");
   };
 
@@ -41,80 +48,54 @@ const Index = () => {
     setCurrentStep("export");
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                OnTrack Cleanroom
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Clean and standardize your CRM contact data
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">
-                  {fileNames.length > 0 ? 'Files uploaded' : 'Current files'}
-                </p>
-                <p className="text-sm font-medium text-foreground">
-                  {fileNames.length > 0 ? `${fileNames.length} file${fileNames.length !== 1 ? 's' : ''}` : "No files uploaded"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+  const handleReset = () => {
+    setFileNames([]);
+    setProcessingStats(null);
+    setCurrentStep("upload");
+  };
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
-        {/* Progress Bar */}
-        <div className="mb-6">
+  const renderStep = () => {
+    switch (currentStep) {
+      case "upload":
+        return <UploadStep onFileUpload={handleFileUpload} />;
+      case "shifting":
+        return <ShiftingStep onComplete={handleShiftingComplete} />;
+      case "mapping":
+        return <ProcessingStep fileNames={fileNames} onComplete={handleMappingComplete} />;
+      case "processing":
+        return (
+          <DataProcessingStep
+            fileName={fileNames.join(", ")}
+            selectedFields={[]}
+            onComplete={handleProcessingComplete}
+          />
+        );
+      case "review":
+        return <ReviewStep onComplete={handleReviewComplete} stats={processingStats} />;
+      case "export":
+        return <ExportStep fileName={fileNames[0] || "combined_data"} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-background font-display text-foreground">
+      <aside className="w-64 bg-card p-6 flex flex-col justify-between border-r border-border">
+        <div>
+          <h1 className="text-2xl font-bold mb-10">OnTrack</h1>
           <StepIndicator steps={steps} currentStep={currentStep} />
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-          {/* Main Workspace */}
-          <div className="lg:col-span-9">
-            <div className="bg-card rounded-xl border border-border shadow-md p-8 min-h-[600px]">
-              {currentStep === "upload" && (
-                <UploadStep onFileUpload={handleFileUpload} />
-              )}
-              {currentStep === "mapping" && (
-                <ProcessingStep
-                  fileNames={fileNames}
-                  onComplete={handleMappingComplete}
-                />
-              )}
-              {currentStep === "processing" && (
-                <DataProcessingStep
-                  fileName={fileNames.join(', ')}
-                  selectedFields={[]}
-                  onComplete={handleProcessingComplete}
-                />
-              )}
-              {currentStep === "review" && (
-                <ReviewStep 
-                  onComplete={handleReviewComplete}
-                  stats={processingStats}
-                />
-              )}
-              {currentStep === "export" && <ExportStep fileName={fileNames[0] || 'combined_data'} />}
-            </div>
-          </div>
-
-          {/* Right Sidebar - Stats */}
-          <div className="lg:col-span-3">
-            <div className="sticky top-8">
-              <StatsPanel stats={processingStats} />
-            </div>
-          </div>
+        <div className="space-y-2">
+          <Button variant="outline" className="w-full" onClick={handleReset}>
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset Selection
+          </Button>
         </div>
-      </div>
+      </aside>
+      <main className="flex-1 p-8">
+        <div className="max-w-full mx-auto">{renderStep()}</div>
+      </main>
     </div>
   );
 };
