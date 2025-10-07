@@ -78,6 +78,29 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
           })}
         </div>
       </div>
+
+      {/* Animated Progress Bar Below */}
+      <div className="mt-6 relative h-2 bg-muted rounded-full overflow-hidden">
+        {/* Animated gradient bar */}
+        <div
+          className="h-full bg-gradient-to-r from-primary via-primary-glow to-primary rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+          style={{
+            width: `${((currentIndex + 1) / steps.length) * 100}%`,
+          }}
+        >
+          {/* Shimmer effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[slide-in-right_2s_ease-in-out_infinite]" />
+        </div>
+        
+        {/* Pulse effect on active section */}
+        <div
+          className="absolute top-0 h-full bg-primary/20 rounded-full transition-all duration-700 animate-pulse"
+          style={{
+            left: `${(currentIndex / steps.length) * 100}%`,
+            width: `${100 / steps.length}%`,
+          }}
+        />
+      </div>
     </div>
   );
 };
