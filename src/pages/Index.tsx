@@ -72,19 +72,15 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar - Steps */}
-          <div className="lg:col-span-2">
-            <div className="bg-card rounded-xl border border-border shadow-sm p-6 sticky top-8">
-              <h2 className="text-sm font-semibold text-foreground mb-4">
-                Progress
-              </h2>
-              <StepIndicator steps={steps} currentStep={currentStep} />
-            </div>
-          </div>
+        {/* Progress Bar */}
+        <div className="mb-6">
+          <StepIndicator steps={steps} currentStep={currentStep} />
+        </div>
 
-          {/* Center - Main Workspace */}
-          <div className="lg:col-span-7">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          {/* Main Workspace */}
+          <div className="lg:col-span-9">
             <div className="bg-card rounded-xl border border-border shadow-md p-8 min-h-[600px]">
               {currentStep === "upload" && (
                 <UploadStep onFileUpload={handleFileUpload} />
