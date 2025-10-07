@@ -13,7 +13,7 @@ type Step = "upload" | "mapping" | "processing" | "review" | "export";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>("upload");
-  const [fileName, setFileName] = useState<string>("");
+  const [fileNames, setFileNames] = useState<string[]>([]);
   const [processingStats, setProcessingStats] = useState<ProcessingStats | null>(null);
 
   const steps = [
@@ -24,8 +24,8 @@ const Index = () => {
     { id: "export", label: "Export", icon: Download },
   ];
 
-  const handleFileUpload = (name: string) => {
-    setFileName(name);
+  const handleFileUpload = (names: string[]) => {
+    setFileNames(names);
     setCurrentStep("mapping");
   };
 
@@ -58,9 +58,11 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">Current file</p>
+                <p className="text-xs text-muted-foreground">
+                  {fileNames.length > 0 ? 'Files uploaded' : 'Current files'}
+                </p>
                 <p className="text-sm font-medium text-foreground">
-                  {fileName || "No file uploaded"}
+                  {fileNames.length > 0 ? `${fileNames.length} file${fileNames.length !== 1 ? 's' : ''}` : "No files uploaded"}
                 </p>
               </div>
             </div>
@@ -89,13 +91,13 @@ const Index = () => {
               )}
               {currentStep === "mapping" && (
                 <ProcessingStep
-                  fileName={fileName}
+                  fileNames={fileNames}
                   onComplete={handleMappingComplete}
                 />
               )}
               {currentStep === "processing" && (
                 <DataProcessingStep
-                  fileName={fileName}
+                  fileName={fileNames.join(', ')}
                   selectedFields={[]}
                   onComplete={handleProcessingComplete}
                 />
@@ -106,7 +108,7 @@ const Index = () => {
                   stats={processingStats}
                 />
               )}
-              {currentStep === "export" && <ExportStep fileName={fileName} />}
+              {currentStep === "export" && <ExportStep fileName={fileNames[0] || 'combined_data'} />}
             </div>
           </div>
 
