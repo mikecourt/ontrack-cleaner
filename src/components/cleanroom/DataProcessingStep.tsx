@@ -67,7 +67,7 @@ const DataProcessingStep = ({ fileName, selectedFields, onComplete }: DataProces
     // Simulate data processing with real cleaning logic
     const processData = async () => {
       // Mock data for demonstration
-      const mockData = Array.from({ length: 5247 }, (_, i) => ({
+      const mockData = Array.from({ length: 100000 }, (_, i) => ({
         FIRST_NAME: `Person${i}`,
         LAST_NAME: `Last${i}`,
         EMAIL: `person${i}@example.com`,
