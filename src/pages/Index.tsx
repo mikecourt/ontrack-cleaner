@@ -1,21 +1,24 @@
 import { useState } from "react";
-import { Upload, Database, FileCheck, Download } from "lucide-react";
+import { Upload, Database, FileCheck, Download, ListFilter } from "lucide-react";
 import StepIndicator from "@/components/cleanroom/StepIndicator";
 import UploadStep from "@/components/cleanroom/UploadStep";
 import ProcessingStep from "@/components/cleanroom/ProcessingStep";
+import DataProcessingStep, { ProcessingStats } from "@/components/cleanroom/DataProcessingStep";
 import ReviewStep from "@/components/cleanroom/ReviewStep";
 import ExportStep from "@/components/cleanroom/ExportStep";
 import StatsPanel from "@/components/cleanroom/StatsPanel";
 import ActivityPanel from "@/components/cleanroom/ActivityPanel";
 
-type Step = "upload" | "processing" | "review" | "export";
+type Step = "upload" | "mapping" | "processing" | "review" | "export";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>("upload");
   const [fileName, setFileName] = useState<string>("");
+  const [processingStats, setProcessingStats] = useState<ProcessingStats | null>(null);
 
   const steps = [
     { id: "upload", label: "Upload", icon: Upload },
+    { id: "mapping", label: "Map Fields", icon: ListFilter },
     { id: "processing", label: "Process", icon: Database },
     { id: "review", label: "Review", icon: FileCheck },
     { id: "export", label: "Export", icon: Download },
@@ -23,10 +26,15 @@ const Index = () => {
 
   const handleFileUpload = (name: string) => {
     setFileName(name);
+    setCurrentStep("mapping");
+  };
+
+  const handleMappingComplete = () => {
     setCurrentStep("processing");
   };
 
-  const handleProcessingComplete = () => {
+  const handleProcessingComplete = (stats: ProcessingStats) => {
+    setProcessingStats(stats);
     setCurrentStep("review");
   };
 
@@ -79,14 +87,24 @@ const Index = () => {
               {currentStep === "upload" && (
                 <UploadStep onFileUpload={handleFileUpload} />
               )}
-              {currentStep === "processing" && (
+              {currentStep === "mapping" && (
                 <ProcessingStep
                   fileName={fileName}
+                  onComplete={handleMappingComplete}
+                />
+              )}
+              {currentStep === "processing" && (
+                <DataProcessingStep
+                  fileName={fileName}
+                  selectedFields={[]}
                   onComplete={handleProcessingComplete}
                 />
               )}
               {currentStep === "review" && (
-                <ReviewStep onComplete={handleReviewComplete} />
+                <ReviewStep 
+                  onComplete={handleReviewComplete}
+                  stats={processingStats}
+                />
               )}
               {currentStep === "export" && <ExportStep fileName={fileName} />}
             </div>
@@ -95,7 +113,7 @@ const Index = () => {
           {/* Right Sidebar - Stats & Activity */}
           <div className="lg:col-span-3">
             <div className="space-y-6 sticky top-8">
-              <StatsPanel />
+              <StatsPanel stats={processingStats} />
               <ActivityPanel />
             </div>
           </div>

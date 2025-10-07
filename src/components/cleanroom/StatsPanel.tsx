@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { ProcessingStats } from "./DataProcessingStep";
 
 type StatItem = {
   label: string;
@@ -9,13 +10,17 @@ type StatItem = {
   trend: "up" | "down" | "neutral";
 };
 
-const StatsPanel = () => {
-  const stats: StatItem[] = [
+type StatsPanelProps = {
+  stats: ProcessingStats | null;
+};
+
+const StatsPanel = ({ stats }: StatsPanelProps) => {
+  const statsData: StatItem[] = [
     {
       label: "Total Rows",
-      baseline: "5,247",
-      current: "4,892",
-      delta: -7,
+      baseline: String(stats?.total || 5247),
+      current: String((stats?.total || 5247) - (stats?.duplicates || 0)),
+      delta: stats?.duplicates ? Math.round(-((stats.duplicates / stats.total) * 100)) : -7,
       trend: "neutral",
     },
     {
@@ -28,16 +33,16 @@ const StatsPanel = () => {
     {
       label: "Valid Phones",
       baseline: "57%",
-      current: "85%",
-      delta: 28,
-      trend: "up",
+      current: stats ? "85%" : "57%",
+      delta: stats?.phonesConsolidated ? 28 : 0,
+      trend: stats?.phonesConsolidated ? "up" : "neutral",
     },
     {
       label: "Duplicates",
-      baseline: "428",
-      current: "0",
-      delta: -100,
-      trend: "up",
+      baseline: String(stats?.duplicates || 428),
+      current: stats ? "0" : "428",
+      delta: stats?.duplicates ? -100 : 0,
+      trend: stats?.duplicates ? "up" : "neutral",
     },
   ];
 
@@ -71,7 +76,7 @@ const StatsPanel = () => {
       </div>
 
       <div className="space-y-3">
-        {stats.map((stat, index) => (
+        {statsData.map((stat, index) => (
           <div key={index} className="border-b border-border pb-3 last:border-0 last:pb-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground">{stat.label}</span>

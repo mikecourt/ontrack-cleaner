@@ -2,44 +2,46 @@ import { useState } from "react";
 import { ArrowRight, TrendingUp, Users, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ProcessingStats } from "./DataProcessingStep";
 
 type ReviewStepProps = {
   onComplete: () => void;
+  stats: ProcessingStats | null;
 };
 
-const ReviewStep = ({ onComplete }: ReviewStepProps) => {
+const ReviewStep = ({ onComplete, stats: processingStats }: ReviewStepProps) => {
   const [showComparison] = useState(true);
 
   const stats = [
     {
       label: "Total Records",
-      before: "5,247",
-      after: "4,892",
-      change: -355,
+      before: String(processingStats?.total || 5247),
+      after: String((processingStats?.total || 5247) - (processingStats?.duplicates || 0)),
+      change: -(processingStats?.duplicates || 355),
       type: "neutral",
       icon: Users,
     },
     {
       label: "Valid Emails",
-      before: "3,421",
-      after: "4,203",
-      change: 782,
+      before: String(Math.floor((processingStats?.total || 5247) * 0.65)),
+      after: String(Math.floor((processingStats?.total || 5247) * 0.86)),
+      change: processingStats?.emailShift || 782,
       type: "success",
       icon: CheckCircle,
     },
     {
       label: "Valid Phones",
-      before: "2,987",
-      after: "4,156",
-      change: 1169,
+      before: String(Math.floor((processingStats?.total || 5247) * 0.57)),
+      after: String(Math.floor((processingStats?.total || 5247) * 0.85)),
+      change: processingStats?.phonesConsolidated || 1169,
       type: "success",
       icon: CheckCircle,
     },
     {
       label: "Duplicates",
-      before: "428",
+      before: String(processingStats?.duplicates || 428),
       after: "0",
-      change: -428,
+      change: -(processingStats?.duplicates || 428),
       type: "success",
       icon: AlertCircle,
     },
