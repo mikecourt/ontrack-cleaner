@@ -1,5 +1,19 @@
 // Data cleaning utility functions
 
+export type ProcessingStats = {
+  total: number;
+  duplicates: number;
+  merged: number;
+  fixed: number;
+  emailShift: number;
+  normalized: number;
+  namesParsed: number;
+  citiesCorrected: number;
+  geoFilled: number;
+  datesFormatted: number;
+  phonesConsolidated: number;
+};
+
 export const consolidatePhoneNumbers = (record: any) => {
   let consolidated = false;
   const newRecord = { ...record };

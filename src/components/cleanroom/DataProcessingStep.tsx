@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { findAndMergeDuplicates, ProcessingStats } from "@/lib/dataCleaningUtils";
 
+export type { ProcessingStats };
+
 type DataProcessingStepProps = {
   fileName: string;
   selectedFields: string[];
