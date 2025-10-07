@@ -1,22 +1,13 @@
 import { useState } from "react";
-import { Database, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-type ProcessingStepProps = {
-  fileNames: string[];
-  onComplete: () => void;
-};
 
 type FieldMapping = {
   id: string;
   name: string;
-  group: string;
   isIncluded: boolean;
   displayName: string;
-  isEditable: boolean;
 };
 
 type FieldGroup = {
@@ -24,180 +15,129 @@ type FieldGroup = {
   fields: FieldMapping[];
 };
 
+type ProcessingStepProps = {
+  fileNames: string[];
+  onComplete: () => void;
+};
+
 const ProcessingStep = ({ fileNames, onComplete }: ProcessingStepProps) => {
   const [fields, setFields] = useState<FieldMapping[]>([
-    // Contact Information
-    { id: "1", name: "first_name", group: "Contact Info", isIncluded: true, displayName: "First Name", isEditable: false },
-    { id: "2", name: "last_name", group: "Contact Info", isIncluded: true, displayName: "Last Name", isEditable: false },
-    { id: "3", name: "email", group: "Contact Info", isIncluded: true, displayName: "Email", isEditable: false },
-    { id: "4", name: "phone", group: "Contact Info", isIncluded: true, displayName: "Phone", isEditable: false },
-    { id: "5", name: "phone_2", group: "Contact Info", isIncluded: true, displayName: "Phone 2", isEditable: false },
-    { id: "6", name: "phone_3", group: "Contact Info", isIncluded: true, displayName: "Phone 3", isEditable: false },
-    { id: "7", name: "fax", group: "Contact Info", isIncluded: false, displayName: "Fax", isEditable: false },
-    
-    // Location
-    { id: "8", name: "address", group: "Location", isIncluded: true, displayName: "Address", isEditable: false },
-    { id: "9", name: "city", group: "Location", isIncluded: true, displayName: "City", isEditable: false },
-    { id: "10", name: "state", group: "Location", isIncluded: true, displayName: "State", isEditable: false },
-    { id: "11", name: "zip", group: "Location", isIncluded: true, displayName: "ZIP Code", isEditable: false },
-    { id: "12", name: "county", group: "Location", isIncluded: true, displayName: "County", isEditable: false },
-    
-    // Business
-    { id: "13", name: "account_name", group: "Business", isIncluded: true, displayName: "Account Name", isEditable: false },
-    { id: "14", name: "business_name", group: "Business", isIncluded: true, displayName: "Business Name", isEditable: false },
-    { id: "15", name: "company", group: "Business", isIncluded: true, displayName: "Company", isEditable: false },
-    
-    // Dates
-    { id: "16", name: "last_invoice_date", group: "Dates", isIncluded: true, displayName: "Last Invoice Date", isEditable: false },
-    { id: "17", name: "next_job_date", group: "Dates", isIncluded: true, displayName: "Next Job Date", isEditable: false },
-    { id: "18", name: "acquisition_date", group: "Dates", isIncluded: false, displayName: "Acquisition Date", isEditable: false },
-    
-    // Additional
-    { id: "19", name: "notes", group: "Additional", isIncluded: true, displayName: "Notes", isEditable: true },
-    { id: "20", name: "custom_field_1", group: "Additional", isIncluded: false, displayName: "Custom Field 1", isEditable: true },
-    { id: "21", name: "custom_field_2", group: "Additional", isIncluded: false, displayName: "Custom Field 2", isEditable: true },
+    { id: "1", name: "contact_id", isIncluded: true, displayName: "Contact ID" },
+    { id: "2", name: "account_id", isIncluded: true, displayName: "Account ID" },
+    { id: "3", name: "first_name", isIncluded: true, displayName: "First Name" },
+    { id: "4", name: "last_name", isIncluded: true, displayName: "Last Name" },
+    { id: "5", name: "email", isIncluded: true, displayName: "Email" },
+    { id: "6", name: "phone", isIncluded: true, displayName: "Phone" },
+    { id: "7", name: "mobile_phone", isIncluded: false, displayName: "Mobile Phone" },
+    { id: "8", name: "account_name", isIncluded: true, displayName: "Account Name" },
+    { id: "9", name: "industry", isIncluded: false, displayName: "Industry" },
+    { id: "10", name: "website", isIncluded: false, displayName: "Website" },
+    { id: "11", name: "mailing_street", isIncluded: true, displayName: "Mailing Street" },
+    { id: "12", name: "mailing_city", isIncluded: true, displayName: "Mailing City" },
+    { id: "13", name: "mailing_state", isIncluded: true, displayName: "Mailing State/Province" },
+    { id: "14", name: "mailing_zip", isIncluded: true, displayName: "Mailing Zip/Postal Code" },
+    { id: "15", name: "mailing_country", isIncluded: false, displayName: "Mailing Country" },
+    { id: "16", name: "created_date", isIncluded: true, displayName: "Created Date" },
+    { id: "17", name: "last_modified_date", isIncluded: true, displayName: "Last Modified Date" },
+    { id: "18", name: "last_activity_date", isIncluded: false, displayName: "Last Activity Date" },
+    { id: "19", name: "lead_source", isIncluded: false, displayName: "Lead Source" },
+    { id: "20", name: "total_spend", isIncluded: false, displayName: "Total Spend" },
+    { id: "21", name: "subscription_tier", isIncluded: true, displayName: "Subscription_Tier__c" },
+    { id: "22", name: "last_login_date", isIncluded: true, displayName: "Last_Login_Date__c" },
+    { id: "23", name: "internal_notes", isIncluded: true, displayName: "Internal_Notes" },
+    { id: "24", name: "legacy_crm_id", isIncluded: false, displayName: "Legacy_CRM_ID" },
   ]);
 
-  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+  const toggleField = (id: string) => {
+    setFields(fields.map((f) => (f.id === id ? { ...f, isIncluded: !f.isIncluded } : f)));
+  };
+
+  const toggleGroup = (groupFields: FieldMapping[], include: boolean) => {
+    const fieldIds = groupFields.map((f) => f.id);
+    setFields(fields.map((f) => (fieldIds.includes(f.id) ? { ...f, isIncluded: include } : f)));
+  };
 
   const fieldGroups: FieldGroup[] = [
-    { name: "Contact Info", fields: fields.filter(f => f.group === "Contact Info") },
-    { name: "Location", fields: fields.filter(f => f.group === "Location") },
-    { name: "Business", fields: fields.filter(f => f.group === "Business") },
-    { name: "Dates", fields: fields.filter(f => f.group === "Dates") },
-    { name: "Additional", fields: fields.filter(f => f.group === "Additional") },
+    { name: "Primary Identifiers", fields: fields.slice(0, 2) },
+    { name: "Contact Information", fields: fields.slice(2, 7) },
+    { name: "Account Details", fields: fields.slice(7, 10) },
+    { name: "Address Information", fields: fields.slice(10, 15) },
+    { name: "Operational / Activity", fields: fields.slice(15, 18) },
+    { name: "Marketing / Totals", fields: fields.slice(18, 20) },
+    { name: "Custom Fields (User-Defined)", fields: fields.slice(20) },
   ];
 
-  const toggleField = (fieldId: string) => {
-    setFields((prev) =>
-      prev.map((field) =>
-        field.id === fieldId ? { ...field, isIncluded: !field.isIncluded } : field
-      )
-    );
-  };
-
-  const toggleGroupFields = (groupName: string, include: boolean) => {
-    setFields((prev) =>
-      prev.map((field) =>
-        field.group === groupName ? { ...field, isIncluded: include } : field
-      )
-    );
-  };
-
-  const updateFieldName = (fieldId: string, newName: string) => {
-    setFields((prev) =>
-      prev.map((field) =>
-        field.id === fieldId ? { ...field, displayName: newName } : field
-      )
-    );
-  };
-
-  const selectedCount = fields.filter((f) => f.isIncluded).length;
-
   return (
-    <div className="flex flex-col h-full">
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-foreground mb-2">
-          Select Fields
-        </h2>
-        <p className="text-muted-foreground">
-          Choose which fields to include from {fileNames.length} file{fileNames.length !== 1 ? 's' : ''}
+    <div>
+      <div className="mb-8">
+        <p className="text-sm text-secondary">Step 2 of 4</p>
+        <h2 className="text-3xl font-bold mt-1">Select Columns for Processing</h2>
+        <p className="text-secondary mt-2 max-w-3xl">
+          Choose which columns from your uploaded file to include for processing. System fields are selected by default.
+          You can uncheck any fields you wish to exclude. Custom fields can be renamed.
         </p>
-        <div className="mt-3 flex items-center gap-2 text-sm">
-          <Database className="w-4 h-4 text-primary" />
-          <span className="text-foreground font-medium">
-            {selectedCount} of {fields.length} fields selected
-          </span>
-        </div>
       </div>
-
-      <div className="flex-1 overflow-y-auto pr-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {fieldGroups.map((group) => (
-            <div key={group.name} className="bg-muted/30 rounded-lg p-4 border border-border">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-foreground">{group.name}</h3>
-                <div className="flex gap-1">
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 @2xl:grid-cols-2 @5xl:grid-cols-3 gap-6">
+          {fieldGroups.map((group, i) => (
+            <div
+              key={i}
+              className={`bg-card rounded-lg border border-border ${i === fieldGroups.length - 1 ? "@5xl:col-span-3" : ""}`}
+            >
+              <div className="p-4 border-b border-border flex justify-between items-center">
+                <h3 className="text-lg font-semibold">{group.name}</h3>
+                <div className="flex items-center space-x-4">
                   <button
-                    onClick={() => toggleGroupFields(group.name, true)}
-                    className="text-xs text-primary hover:text-primary/80 transition-colors px-2 py-1"
+                    className="text-sm font-semibold text-primary hover:underline"
+                    onClick={() => toggleGroup(group.fields, true)}
                   >
-                    All
+                    Select All
                   </button>
-                  <span className="text-xs text-muted-foreground">|</span>
                   <button
-                    onClick={() => toggleGroupFields(group.name, false)}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
+                    className="text-sm font-semibold text-primary hover:underline"
+                    onClick={() => toggleGroup(group.fields, false)}
                   >
-                    None
+                    Select None
                   </button>
                 </div>
               </div>
-              <div className="space-y-2">
-                {group.fields.map((field) => (
-                  <div
-                    key={field.id}
-                    className={`flex items-start gap-2 p-2 rounded transition-all ${
-                      field.isIncluded ? "bg-card" : "opacity-60"
-                    }`}
-                  >
-                    <Checkbox
-                      id={field.id}
-                      checked={field.isIncluded}
-                      onCheckedChange={() => toggleField(field.id)}
-                      className="flex-shrink-0 mt-0.5"
-                    />
-                    <div className="flex-1 min-w-0">
-                      {field.isEditable && editingFieldId === field.id ? (
-                        <Input
-                          value={field.displayName}
-                          onChange={(e) => updateFieldName(field.id, e.target.value)}
-                          onBlur={() => setEditingFieldId(null)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") setEditingFieldId(null);
-                          }}
-                          autoFocus
-                          className="h-7 text-xs"
-                        />
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <Label
+              <div className="p-6">
+                <ul
+                  className={`space-y-4 ${i === fieldGroups.length - 1 ? "grid grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3 gap-x-8 gap-y-4" : ""}`}
+                >
+                  {group.fields.map((field) => (
+                    <li key={field.id} className="flex items-center space-x-3 group">
+                      <Checkbox
+                        id={field.id}
+                        checked={field.isIncluded}
+                        onCheckedChange={() => toggleField(field.id)}
+                      />
+                      <div className="flex-1">
+                        {i === fieldGroups.length - 1 ? (
+                          <Input
+                            type="text"
+                            defaultValue={field.displayName}
+                            className={`w-full bg-transparent border-0 focus:ring-0 p-0 text-sm font-medium focus:bg-background rounded-sm px-1 -mx-1 ${!field.isIncluded ? "text-secondary" : ""}`}
+                          />
+                        ) : (
+                          <label
                             htmlFor={field.id}
-                            className={`text-xs font-medium cursor-pointer ${
-                              field.isIncluded ? "text-foreground" : "text-muted-foreground"
-                            }`}
+                            className={`text-sm font-medium ${!field.isIncluded ? "text-secondary" : ""}`}
                           >
                             {field.displayName}
-                          </Label>
-                          {field.isEditable && field.isIncluded && (
-                            <button
-                              onClick={() => setEditingFieldId(field.id)}
-                              className="text-muted-foreground hover:text-primary transition-colors"
-                              aria-label="Edit field name"
-                            >
-                              <Edit2 className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                          </label>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="mt-6 pt-4 border-t border-border">
-        <Button
-          onClick={onComplete}
-          size="lg"
-          disabled={selectedCount === 0}
-          className="w-full bg-gradient-primary shadow-md hover:shadow-lg transition-all"
-        >
-          Continue to Processing
-        </Button>
+        <div className="mt-8 flex justify-end">
+          <Button onClick={onComplete}>Next: Clean Data</Button>
+        </div>
       </div>
     </div>
   );
